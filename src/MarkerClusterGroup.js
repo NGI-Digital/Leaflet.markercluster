@@ -912,6 +912,37 @@ export var MarkerClusterGroup = L.MarkerClusterGroup = L.FeatureGroup.extend({
 		}
 	},
 
+	_expandAll: function () {
+		console.log("Expand all", this._currentShownBounds);
+
+		var cluster = this._gridClusters[this._maxZoom - 1];
+		console.log("Cluster", cluster );
+
+		this._allNodesExpanded = true;
+
+		cluster.eachObject(function(o) {
+			o._childClusters.forEach(function(bottom) {
+				bottom.spiderfy(true);
+			})
+		});	
+		
+	},
+	
+	_collapseAll: function () {
+		console.log("Collapse all", this._currentShownBounds);
+
+		var cluster = this._gridClusters[this._maxZoom - 1];
+		console.log("Cluster", cluster );
+
+		cluster.eachObject(function(o) {
+			o._childClusters.forEach(function(bottom) {
+				bottom.unspiderfy(null, true);
+			})
+		});		
+
+		this._allNodesExpanded = false;
+	},
+
 	_zoomEnd: function () {
 		if (!this._map) { //May have been removed from the map by a zoomEnd handler
 			return;
@@ -920,6 +951,13 @@ export var MarkerClusterGroup = L.MarkerClusterGroup = L.FeatureGroup.extend({
 
 		this._zoom = Math.round(this._map._zoom);
 		this._currentShownBounds = this._getExpandedVisibleBounds();
+
+		if ( this._zoom === this._maxZoom && this.options.spiderfyAllOnMaxZoom) {
+			setTimeout(function(){ this._expandAll(); }.bind(this), 220);
+		}
+		else if (this._allNodesExpanded) {
+			this._collapseAll();
+		}
 	},
 
 	_moveEnd: function () {
@@ -955,6 +993,7 @@ export var MarkerClusterGroup = L.MarkerClusterGroup = L.FeatureGroup.extend({
 		this._maxZoom = maxZoom;
 		this._gridClusters = {};
 		this._gridUnclustered = {};
+		this._allNodesExpanded = false;
 
 		//Set up DistanceGrids for each zoom
 		for (var zoom = maxZoom; zoom >= minZoom; zoom--) {

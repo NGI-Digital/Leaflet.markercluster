@@ -148,6 +148,7 @@ var markers = L.markerClusterGroup({
 * **animate**: Smoothly split / merge cluster children when zooming and spiderfying. If `L.DomUtil.TRANSITION` is false, this option has no effect (no animation is possible).
 
 #### Other options
+* **spiderfyAllOnMaxZoom**: When you reach the bottom zoom level, we spiderfy all clusters so you can see all markers.
 * **animateAddingMarkers**: If set to true (and `animate` option is also true) then adding individual markers to the MarkerClusterGroup after it has been added to the map will add the marker and animate it into the cluster. Defaults to false as this gives better performance when bulk adding markers. addLayers does not support this, only addLayer with individual Markers.
 * **disableClusteringAtZoom**: If set, at this zoom level and below, markers will not be clustered. This defaults to disabled. [See Example](https://leaflet.github.io/Leaflet.markercluster/example/marker-clustering-realworld-maxzoom.388.html). Note: you may be interested in disabling `spiderfyOnMaxZoom` option when using `disableClusteringAtZoom`.
 * **maxClusterRadius**: The maximum radius that a cluster will cover from the central marker (in pixels). Default 80. Decreasing will make more, smaller clusters. You can also use a function that accepts the current map zoom and returns the maximum cluster radius in pixels.

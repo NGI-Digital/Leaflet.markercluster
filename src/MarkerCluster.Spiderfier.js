@@ -14,8 +14,16 @@ L.MarkerCluster.include({
 	_circleSpiralSwitchover: 9, //show spiral instead of circle from this marker count upwards.
 								// 0 -> always spiral; Infinity -> always circle
 
-	spiderfy: function () {
-		if (this._group._spiderfied === this || this._group._inZoomAnimation) {
+	spiderfy: function (allNodesSpiderfy) {
+
+		if (this._group._allNodesExpanded && !allNodesSpiderfy )
+			return;
+
+		if (this._group._spiderfied === this) {
+			return;
+		}
+
+		if ( this._group._inZoomAnimation && !allNodesSpiderfy) {
 			return;
 		}
 
@@ -25,8 +33,10 @@ L.MarkerCluster.include({
 			center = map.latLngToLayerPoint(this._latlng),
 			positions;
 
-		this._group._unspiderfy();
-		this._group._spiderfied = this;
+		if (!allNodesSpiderfy) {
+			this._group._unspiderfy();
+			this._group._spiderfied = this;
+		}
 
 		//TODO Maybe: childMarkers order by distance to center
 
@@ -42,9 +52,13 @@ L.MarkerCluster.include({
 		this._animationSpiderfy(childMarkers, positions);
 	},
 
-	unspiderfy: function (zoomDetails) {
+	unspiderfy: function (zoomDetails, allNodesSpiderfy) {
+
+		if (this._group._allNodesExpanded && !allNodesSpiderfy )
+			return;
+
 		/// <param Name="zoomDetails">Argument from zoomanim if being called in a zoom animation or null otherwise</param>
-		if (this._group._inZoomAnimation) {
+		if (this._group._inZoomAnimation && !allNodesSpiderfy) {
 			return;
 		}
 		this._animationUnspiderfy(zoomDetails);
